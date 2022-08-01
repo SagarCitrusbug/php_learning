@@ -14,4 +14,9 @@ class Post extends Model
     protected $primaryKey = 'id';
     // Timestamps
     public $timestamps = true;
+
+    // Give relational ship 
+    public function user(){
+        return $this->belongsTo('App\Models\User');
+    }
 }
