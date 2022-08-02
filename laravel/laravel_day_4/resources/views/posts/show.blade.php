@@ -8,10 +8,14 @@
         {!! $posts->body !!}
     </div>
     <hr>
-    <a href='/posts/{{$posts->id}}/edit' class='btn btn-primary'>Edit</a>
+    @if(!Auth::guest())
+        @if(Auth::user()->id == $posts->user_id)
+            <a href='/posts/{{$posts->id}}/edit' class='btn btn-primary'>Edit</a>
 
-    {!! Form::open(['action' => ['App\Http\Controllers\PostController@destroy', $posts->id], 'method' => 'POST']) !!}
-        {{ Form::hidden('_method', 'DELETE') }}
-        {{ Form::submit('Delete', ['class' => 'btn btn-danger float-right']) }}
-    {!! Form::close() !!}
+            {!! Form::open(['action' => ['App\Http\Controllers\PostController@destroy', $posts->id], 'method' => 'POST']) !!}
+                {{ Form::hidden('_method', 'DELETE') }}
+                {{ Form::submit('Delete', ['class' => 'btn btn-danger float-right']) }}
+            {!! Form::close() !!}
+        @endif
+    @endif
 @endsection

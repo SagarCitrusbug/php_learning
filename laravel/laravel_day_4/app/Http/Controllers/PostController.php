@@ -7,7 +7,17 @@ use App\Models\Post;
 use DB;
 
 class PostController extends Controller
-{
+{   
+    /**
+     * Create a new controller instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->middleware('auth', ['except' => ['index', 'show']]);
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -87,6 +97,10 @@ class PostController extends Controller
     public function edit($id)
     {
         $posts = Post::find($id);
+        // login user not create post user that time redirect to post page with error message.
+        if(auth()->user()->id !== $posts->user_id){
+            return redirect('/posts')-> with('error', 'Unauthorized page.');
+        }
         return view('posts.edit')->with('posts', $posts);
     }
 
@@ -121,8 +135,10 @@ class PostController extends Controller
     public function destroy($id)
     {
         $post = Post::find($id);
+        if(auth()->user()->id !== $posts->user_id){
+            return redirect('/posts')-> with('error', 'Unauthorized page.');
+        }
         $post-> delete();
-
         return redirect('/posts')->with('success', 'Post Remove.');
     }
 }
