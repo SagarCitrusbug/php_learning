@@ -65,11 +65,30 @@ class PostController extends Controller
         $this->validate($request, [
             'title' => 'required',
             'body' => 'required',
+            'cover_image' => 'image|nullable|max:1999',
         ]);
+        echo $request;
+        // Handle File Upload
+        if($request->hasFile('cover_image')){
+            // Get file with extention
+            $fileNameWithExt = $request->file('cover_image')->getClientOriginalName();
+            // Get just file name.
+            $filename = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
+            // Get just extention.
+            $extention = $request->file('cover_image')->getClientOriginalExtension();
+
+            $fileNameToStore = $filename.'_'.time().'.'.$extention;
+            // Upload image
+            $path = $request->file('cover_image')->storeAs('public/cover_images', $fileNameToStore);
+        }else{
+            $fileNameToStore = 'noimage.jpg';
+        }
+
         // Insert Post data in table
         $post = new Post;
         $post-> title = $request->input('title');
         $post-> body = $request->input('body');
+        $post->cover_image = $fileNameToStore;
         $post-> user_id = auth()->user()->id;
         $post-> save();
 
